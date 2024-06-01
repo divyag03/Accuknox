@@ -1,0 +1,37 @@
+import requests
+import logging
+from datetime import datetime
+
+# Application URL
+APPLICATION_URL = "http://your-application-url.com"
+
+# Log file location
+LOG_FILE = "/var/log/application_health.log"
+
+# Configure logging
+logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format='%(asctime)s - %(message)s')
+
+def log_message(message):
+    """Log a message to the console and to the log file."""
+    print(message)
+    logging.info(message)
+
+def check_application_status():
+    """Check the status of the application."""
+    try:
+        response = requests.get(APPLICATION_URL, timeout=10)
+        if 200 <= response.status_code < 300:
+            log_message(f"Application is UP. Status code: {response.status_code}")
+        else:
+            log_message(f"Application is DOWN. Status code: {response.status_code}")
+    except requests.RequestException as e:
+        log_message(f"Application is DOWN. Error: {e}")
+
+def main():
+    """Main function to check application uptime."""
+    log_message("Starting application health check...")
+    check_application_status()
+    log_message("Application health check completed.")
+
+if __name__ == "__main__":
+    main()
