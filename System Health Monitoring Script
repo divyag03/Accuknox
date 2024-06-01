@@ -1,0 +1,58 @@
+import psutil
+import logging
+from datetime import datetime
+
+# Set thresholds
+CPU_THRESHOLD = 80
+MEMORY_THRESHOLD = 80
+DISK_THRESHOLD = 80
+PROCESS_THRESHOLD = 150
+
+# Log file location
+LOG_FILE = "/var/log/system_health.log"
+
+# Configure logging
+logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format='%(asctime)s - %(message)s')
+
+def log_message(message):
+    """Log a message to the console and to the log file."""
+    print(message)
+    logging.info(message)
+
+def check_cpu_usage():
+    """Check CPU usage and log if it exceeds the threshold."""
+    cpu_usage = psutil.cpu_percent(interval=1)
+    if cpu_usage > CPU_THRESHOLD:
+        log_message(f"CPU usage is high: {cpu_usage}%")
+
+def check_memory_usage():
+    """Check memory usage and log if it exceeds the threshold."""
+    memory_info = psutil.virtual_memory()
+    memory_usage = memory_info.percent
+    if memory_usage > MEMORY_THRESHOLD:
+        log_message(f"Memory usage is high: {memory_usage}%")
+
+def check_disk_usage():
+    """Check disk usage and log if it exceeds the threshold."""
+    disk_info = psutil.disk_usage('/')
+    disk_usage = disk_info.percent
+    if disk_usage > DISK_THRESHOLD:
+        log_message(f"Disk space usage is high: {disk_usage}%")
+
+def check_running_processes():
+    """Check the number of running processes and log if it exceeds the threshold."""
+    process_count = len(psutil.pids())
+    if process_count > PROCESS_THRESHOLD:
+        log_message(f"Number of running processes is high: {process_count}")
+
+def main():
+    """Main function to check system health."""
+    log_message("Starting system health check...")
+    check_cpu_usage()
+    check_memory_usage()
+    check_disk_usage()
+    check_running_processes()
+    log_message("System health check completed.")
+
+if __name__ == "__main__":
+    main()
